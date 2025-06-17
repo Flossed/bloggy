@@ -12,7 +12,7 @@ exports.ensureAdmin = (req, res, next) => {
   if (req.isAuthenticated() && req.user.role === 'admin') {
     return next();
   }
-  res.status(403).render('error', { error: 'Access denied. Admin privileges required.' });
+  res.status(403).render('error', { title: 'Access Denied', error: 'Access denied. Admin privileges required.' });
 };
 
 // Middleware to ensure user owns the resource
@@ -22,7 +22,7 @@ exports.ensureOwnership = (model) => {
       const resource = await model.findById(req.params.id);
       
       if (!resource) {
-        return res.status(404).render('error', { error: 'Resource not found' });
+        return res.status(404).render('error', { title: 'Not Found', error: 'Resource not found' });
       }
       
       // Check if user is admin or owner
@@ -31,10 +31,10 @@ exports.ensureOwnership = (model) => {
         return next();
       }
       
-      res.status(403).render('error', { error: 'You do not have permission to access this resource' });
+      res.status(403).render('error', { title: 'Permission Denied', error: 'You do not have permission to access this resource' });
     } catch (error) {
       global.logger.error('Ownership check error:', error);
-      res.status(500).render('error', { error: 'Server error' });
+      res.status(500).render('error', { title: 'Server Error', error: 'Server error' });
     }
   };
 };

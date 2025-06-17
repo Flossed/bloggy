@@ -24,7 +24,7 @@ router.get('/', ensureAdmin, async (req, res) => {
     });
   } catch (error) {
     global.logger.error('Admin dashboard error:', error);
-    res.status(500).render('error', { error: 'Failed to load admin dashboard' });
+    res.status(500).render('error', { title: 'Error', error: 'Failed to load admin dashboard' });
   }
 });
 
@@ -39,7 +39,7 @@ router.get('/users', ensureAdmin, async (req, res) => {
     });
   } catch (error) {
     global.logger.error('Admin users error:', error);
-    res.status(500).render('error', { error: 'Failed to load users' });
+    res.status(500).render('error', { title: 'Error', error: 'Failed to load users' });
   }
 });
 
@@ -111,7 +111,7 @@ router.get('/articles', ensureAdmin, async (req, res) => {
     });
   } catch (error) {
     global.logger.error('Admin articles error:', error);
-    res.status(500).render('error', { error: 'Failed to load articles' });
+    res.status(500).render('error', { title: 'Error', error: 'Failed to load articles' });
   }
 });
 
@@ -170,7 +170,7 @@ router.get('/analytics', ensureAdmin, async (req, res) => {
     });
   } catch (error) {
     global.logger.error('Admin analytics error:', error);
-    res.status(500).render('error', { error: 'Failed to load analytics' });
+    res.status(500).render('error', { title: 'Error', error: 'Failed to load analytics' });
   }
 });
 
