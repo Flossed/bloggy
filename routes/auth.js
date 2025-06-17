@@ -8,8 +8,7 @@ router.get('/login', (req, res) => {
     return res.redirect('/blog/dashboard');
   }
   res.render('auth/login', { 
-    title: 'Login',
-    error: req.flash ? req.flash('error') : null
+    title: 'Login'
   });
 });
 
@@ -26,8 +25,7 @@ router.get('/register', (req, res) => {
     return res.redirect('/blog/dashboard');
   }
   res.render('auth/register', { 
-    title: 'Register',
-    error: null
+    title: 'Register'
   });
 });
 
