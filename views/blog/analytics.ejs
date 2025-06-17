@@ -1,0 +1,192 @@
+<%- include('../partials/header') %>
+
+<div class="container py-5">
+    <h1 class="mb-4">Analytics for: <%= article.title %></h1>
+    
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Total Views</h5>
+                    <h2 class="text-primary"><%= article.views %></h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Total Likes</h5>
+                    <h2 class="text-danger"><%= article.likes %></h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Average Rating</h5>
+                    <h2 class="text-warning">
+                        <%= article.averageRating > 0 ? article.averageRating.toFixed(1) : '-' %>/10
+                    </h2>
+                    <small class="text-muted"><%= article.ratings.length %> ratings</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Version</h5>
+                    <h2 class="text-info"><%= article.currentVersion %></h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Daily Views (Last 30 Days)</h5>
+        </div>
+        <div class="card-body">
+            <canvas id="viewsChart"></canvas>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Device Types</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="deviceChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Top Referrers</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Source</th>
+                                    <th>Visits</th>
+                                </tr>
+                            </thead>
+                            <tbody id="referrersTable">
+                                <!-- Populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="text-center">
+        <a href="/blog/dashboard" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const analytics = <%- JSON.stringify(analytics) %>;
+
+// Prepare data for views chart
+const dates = [];
+const views = [];
+const uniqueVisitors = [];
+
+// Fill in missing dates
+const today = new Date();
+for (let i = 29; i >= 0; i--) {
+    const date = new Date(today);
+    date.setDate(date.getDate() - i);
+    const dateStr = date.toISOString().split('T')[0];
+    
+    const dayData = analytics.find(a => a.date.startsWith(dateStr));
+    dates.push(dateStr);
+    views.push(dayData ? dayData.views : 0);
+    uniqueVisitors.push(dayData ? dayData.uniqueVisitors.length : 0);
+}
+
+// Views Chart
+const ctx1 = document.getElementById('viewsChart').getContext('2d');
+new Chart(ctx1, {
+    type: 'line',
+    data: {
+        labels: dates,
+        datasets: [{
+            label: 'Views',
+            data: views,
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.1
+        }, {
+            label: 'Unique Visitors',
+            data: uniqueVisitors,
+            borderColor: 'rgb(255, 99, 132)',
+            tension: 0.1
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+// Device Chart
+const deviceData = {
+    desktop: 0,
+    mobile: 0,
+    tablet: 0
+};
+
+analytics.forEach(day => {
+    deviceData.desktop += day.devices.desktop || 0;
+    deviceData.mobile += day.devices.mobile || 0;
+    deviceData.tablet += day.devices.tablet || 0;
+});
+
+const ctx2 = document.getElementById('deviceChart').getContext('2d');
+new Chart(ctx2, {
+    type: 'doughnut',
+    data: {
+        labels: ['Desktop', 'Mobile', 'Tablet'],
+        datasets: [{
+            data: [deviceData.desktop, deviceData.mobile, deviceData.tablet],
+            backgroundColor: [
+                'rgb(54, 162, 235)',
+                'rgb(255, 99, 132)',
+                'rgb(255, 205, 86)'
+            ]
+        }]
+    }
+});
+
+// Referrers Table
+const referrers = {};
+analytics.forEach(day => {
+    day.referrers.forEach(ref => {
+        referrers[ref.url] = (referrers[ref.url] || 0) + ref.count;
+    });
+});
+
+const sortedReferrers = Object.entries(referrers)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10);
+
+const referrersTable = document.getElementById('referrersTable');
+sortedReferrers.forEach(([url, count]) => {
+    const row = referrersTable.insertRow();
+    row.insertCell(0).textContent = url || 'Direct';
+    row.insertCell(1).textContent = count;
+});
+</script>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,107 @@
+<%- include('../partials/header') %>
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Global Analytics</h1>
+        <a href="/admin" class="btn btn-secondary">Back to Admin</a>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Platform Views (Last 30 Days)</h5>
+        </div>
+        <div class="card-body">
+            <canvas id="platformViewsChart"></canvas>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Top 10 Articles by Views</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Article</th>
+                            <th>Author</th>
+                            <th>Views</th>
+                            <th>Likes</th>
+                            <th>Rating</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% topArticles.forEach(article => { %>
+                            <tr>
+                                <td>
+                                    <a href="/blog/article/<%= article.slug %>" target="_blank">
+                                        <%= article.title %>
+                                    </a>
+                                </td>
+                                <td><%= article.author.username %></td>
+                                <td><%= article.views %></td>
+                                <td><%= article.likes %></td>
+                                <td>
+                                    <% if (article.averageRating > 0) { %>
+                                        <%= article.averageRating.toFixed(1) %>/10
+                                    <% } else { %>
+                                        -
+                                    <% } %>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const analytics = <%- JSON.stringify(analytics) %>;
+
+// Prepare data for platform views chart
+const dates = [];
+const totalViews = [];
+const uniqueVisitors = [];
+
+analytics.forEach(day => {
+    dates.push(day._id);
+    totalViews.push(day.totalViews);
+    uniqueVisitors.push(day.uniqueVisitors);
+});
+
+// Platform Views Chart
+const ctx = document.getElementById('platformViewsChart').getContext('2d');
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: dates,
+        datasets: [{
+            label: 'Total Views',
+            data: totalViews,
+            borderColor: 'rgb(75, 192, 192)',
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            tension: 0.1
+        }, {
+            label: 'Unique Visitors',
+            data: uniqueVisitors,
+            borderColor: 'rgb(255, 99, 132)',
+            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+            tension: 0.1
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
+
+<%- include('../partials/footer') %>

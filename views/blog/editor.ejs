@@ -1,0 +1,104 @@
+<% 
+    const pageTitle = article ? 'Edit Article' : 'Create New Article';
+    const includeQuill = true;
+%>
+<%- include('../partials/header', { title: pageTitle, includeQuill: true }) %>
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <h1 class="mb-4"><%= pageTitle %></h1>
+            
+            <form id="articleForm" action="<%= action %>" method="POST" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label for="title" class="form-label">Title</label>
+                    <input type="text" class="form-control" id="title" name="title" 
+                           value="<%= article ? article.title : '' %>" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="excerpt" class="form-label">Excerpt (optional)</label>
+                    <textarea class="form-control" id="excerpt" name="excerpt" rows="2" 
+                              maxlength="300"><%= article ? article.excerpt : '' %></textarea>
+                    <div class="form-text">Brief description of your article (max 300 characters)</div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="content" class="form-label">Content</label>
+                    <div id="editor" style="height: 400px;">
+                        <%- article ? article.content : '' %>
+                    </div>
+                    <input type="hidden" name="content">
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="tags" class="form-label">Tags</label>
+                        <input type="text" class="form-control" id="tags" name="tags" 
+                               value="<%= article ? article.tags.join(', ') : '' %>">
+                        <div class="form-text">Comma-separated tags</div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label for="status" class="form-label">Status</label>
+                        <select class="form-control" id="status" name="status">
+                            <option value="draft" <%= (!article || article.status === 'draft') ? 'selected' : '' %>>
+                                Draft
+                            </option>
+                            <option value="published" <%= (article && article.status === 'published') ? 'selected' : '' %>>
+                                Published
+                            </option>
+                            <% if (article && article.status === 'archived') { %>
+                                <option value="archived" selected>Archived</option>
+                            <% } %>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="featuredImage" class="form-label">Featured Image</label>
+                    <input type="file" class="form-control" id="featuredImage" name="featuredImage" 
+                           accept="image/*">
+                    <% if (article && article.featuredImage) { %>
+                        <div class="mt-2">
+                            <img src="<%= article.featuredImage %>" alt="Current featured image" 
+                                 style="max-width: 200px;">
+                        </div>
+                    <% } %>
+                </div>
+                
+                <hr>
+                
+                <h3>SEO Settings</h3>
+                
+                <div class="mb-3">
+                    <label for="metaTitle" class="form-label">Meta Title</label>
+                    <input type="text" class="form-control" id="metaTitle" name="metaTitle" 
+                           value="<%= article && article.seo ? article.seo.metaTitle : '' %>">
+                </div>
+                
+                <div class="mb-3">
+                    <label for="metaDescription" class="form-label">Meta Description</label>
+                    <textarea class="form-control" id="metaDescription" name="metaDescription" 
+                              rows="2"><%= article && article.seo ? article.seo.metaDescription : '' %></textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="metaKeywords" class="form-label">Meta Keywords</label>
+                    <input type="text" class="form-control" id="metaKeywords" name="metaKeywords" 
+                           value="<%= article && article.seo ? article.seo.metaKeywords.join(', ') : '' %>">
+                    <div class="form-text">Comma-separated keywords</div>
+                </div>
+                
+                <div class="d-flex justify-content-between">
+                    <a href="/blog/dashboard" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">
+                        <%= article ? 'Update Article' : 'Create Article' %>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,152 @@
+<%- include('../partials/header') %>
+
+<div class="container py-5">
+    <article>
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <% if (article.featuredImage) { %>
+                    <img src="<%= article.featuredImage %>" class="img-fluid mb-4" alt="<%= article.title %>">
+                <% } %>
+                
+                <h1 class="mb-3"><%= article.title %></h1>
+                
+                <div class="text-muted mb-4">
+                    <small>
+                        By <a href="/blog/user/<%= article.author.username %>"><%= article.author.username %></a>
+                        on <%= new Date(article.publishedAt).toLocaleDateString() %>
+                    </small>
+                    
+                    <div class="mt-2">
+                        <span class="badge bg-secondary me-2">
+                            <i class="bi bi-eye"></i> <%= article.views %> views
+                        </span>
+                        <span class="badge bg-primary me-2" id="likesCount">
+                            <i class="bi bi-heart"></i> <%= article.likes %> likes
+                        </span>
+                        <% if (article.averageRating > 0) { %>
+                            <span class="badge bg-warning" id="ratingBadge">
+                                <i class="bi bi-star-fill"></i> <%= article.averageRating.toFixed(1) %>/10
+                                (<%= article.ratings.length %> ratings)
+                            </span>
+                        <% } %>
+                    </div>
+                </div>
+                
+                <div class="article-content">
+                    <%- article.content %>
+                </div>
+                
+                <% if (article.tags && article.tags.length > 0) { %>
+                    <div class="mt-4">
+                        <% article.tags.forEach(tag => { %>
+                            <span class="badge bg-secondary me-1">#<%= tag %></span>
+                        <% } %>
+                    </div>
+                <% } %>
+                
+                <hr class="my-5">
+                
+                <!-- Interaction Section -->
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Did you enjoy this article?</h5>
+                        
+                        <div class="d-flex align-items-center gap-4">
+                            <button class="btn btn-outline-primary" onclick="likeArticle()">
+                                <i class="bi bi-heart"></i> Like
+                            </button>
+                            
+                            <div>
+                                <label class="form-label mb-0">Rate this article:</label>
+                                <select class="form-select form-select-sm d-inline-block w-auto ms-2" 
+                                        id="ratingSelect" onchange="rateArticle()">
+                                    <option value="">Select rating</option>
+                                    <% for(let i = 1; i <= 10; i++) { %>
+                                        <option value="<%= i %>"><%= i %>/10</option>
+                                    <% } %>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div id="interactionMessage" class="mt-3"></div>
+                    </div>
+                </div>
+                
+                <div class="mt-5">
+                    <h4>About the Author</h4>
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <a href="/blog/user/<%= article.author.username %>">
+                                    <%= article.author.username %>
+                                </a>
+                            </h5>
+                            <p class="card-text"><%= article.author.blogSpace.description %></p>
+                            <a href="/blog/user/<%= article.author.username %>" class="btn btn-sm btn-primary">
+                                View all articles
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </article>
+</div>
+
+<script>
+const articleId = '<%= article._id %>';
+
+function likeArticle() {
+    fetch(`/api/article/${articleId}/like`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('likesCount').innerHTML = 
+                `<i class="bi bi-heart"></i> ${data.likes} likes`;
+            showMessage('Thank you for liking this article!', 'success');
+        }
+    })
+    .catch(err => {
+        showMessage('Failed to like article', 'danger');
+    });
+}
+
+function rateArticle() {
+    const rating = document.getElementById('ratingSelect').value;
+    if (!rating) return;
+    
+    fetch(`/api/article/${articleId}/rate`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ rating: parseInt(rating) })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('ratingBadge').innerHTML = 
+                `<i class="bi bi-star-fill"></i> ${data.averageRating.toFixed(1)}/10 (${data.totalRatings} ratings)`;
+            showMessage('Thank you for rating this article!', 'success');
+        }
+    })
+    .catch(err => {
+        showMessage('Failed to rate article', 'danger');
+    });
+}
+
+function showMessage(message, type) {
+    document.getElementById('interactionMessage').innerHTML = 
+        `<div class="alert alert-${type} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>`;
+}
+</script>
+
+<%- include('../partials/footer') %>

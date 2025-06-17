@@ -1,0 +1,20 @@
+Create an application that is based on "E:\_Applications\__Arduino\homeEnvMon" which is a mongodb, nodejes, express application in "E:\_Applications\___Claude\bloggy". 
+- the mongodb resides in 192.168.129.197
+- the application uses a .npmrc from "E:\_Applications\__Arduino\homeEnvMon" as reference to get from the local nexus repository.
+- the application version starts with 0.0.0
+- the version is rendered on the footer in the blog.
+- the licenses should be MIT.
+- a repository should be created on github under https://github.com/Flossed/bloggy
+- The application needs to allow different users to log in an maintain their blogs. 
+- The blogs can be in draft and published mode. 
+- The published mode is generally available to unauthenticated users. 
+- The draft mode is only available for authenticated users. 
+- The users should have a wysiwyg editor to create content, and can format the page layout and paste different media as part of the blog.
+- The application keeps tracks of the visitors reading the published blog. 
+- The statistics will be available for the authenticated users and an admin user. 
+- Unauthenticated users can like articles and rate them from 1 .. 10. 
+- All changes to articles should be stored as a version and with a date. 
+- Authenticated users can retract published articles and give them a status archived, 
+- Archived articles are not visible to the un authorzed users. 
+- The administrator can delete users and theirs spaces which are then archived and can only be reactivated by administrator again. 
+- Viewers stats can be emailed to the blog owner as aggregated viewer stats and rating over time.

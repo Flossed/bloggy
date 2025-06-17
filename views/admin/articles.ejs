@@ -1,0 +1,101 @@
+<%- include('../partials/header') %>
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Manage Articles</h1>
+        <a href="/admin" class="btn btn-secondary">Back to Admin</a>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Status</th>
+                    <th>Views</th>
+                    <th>Likes</th>
+                    <th>Rating</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% articles.forEach(article => { %>
+                    <tr>
+                        <td>
+                            <% if (article.status === 'published') { %>
+                                <a href="/blog/article/<%= article.slug %>" target="_blank">
+                                    <%= article.title %>
+                                </a>
+                            <% } else { %>
+                                <%= article.title %>
+                            <% } %>
+                        </td>
+                        <td>
+                            <%= article.author.username %>
+                            <br>
+                            <small class="text-muted"><%= article.author.email %></small>
+                        </td>
+                        <td>
+                            <% if (article.status === 'draft') { %>
+                                <span class="badge bg-secondary">Draft</span>
+                            <% } else if (article.status === 'published') { %>
+                                <span class="badge bg-success">Published</span>
+                            <% } else { %>
+                                <span class="badge bg-warning">Archived</span>
+                            <% } %>
+                        </td>
+                        <td><%= article.views %></td>
+                        <td><%= article.likes %></td>
+                        <td>
+                            <% if (article.averageRating > 0) { %>
+                                <%= article.averageRating.toFixed(1) %>/10
+                            <% } else { %>
+                                -
+                            <% } %>
+                        </td>
+                        <td><%= new Date(article.createdAt).toLocaleDateString() %></td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="/blog/analytics/<%= article._id %>" 
+                                   class="btn btn-outline-info" target="_blank">
+                                    <i class="bi bi-graph-up"></i>
+                                </a>
+                                <% if (article.status !== 'draft') { %>
+                                    <button class="btn btn-outline-warning" 
+                                            onclick="archiveArticle('<%= article._id %>')">
+                                        <%= article.status === 'archived' ? 'Unarchive' : 'Archive' %>
+                                    </button>
+                                <% } %>
+                            </div>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+function archiveArticle(articleId) {
+    if (confirm('Are you sure you want to toggle the archive status of this article?')) {
+        fetch(`/admin/articles/${articleId}/archive`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                window.location.reload();
+            } else {
+                alert(data.error || 'Failed to archive/unarchive article');
+            }
+        });
+    }
+}
+</script>
+
+<%- include('../partials/footer') %>

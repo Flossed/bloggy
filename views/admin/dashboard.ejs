@@ -1,0 +1,78 @@
+<%- include('../partials/header') %>
+
+<div class="container py-5">
+    <h1 class="mb-4">Admin Dashboard</h1>
+    
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Total Users</h5>
+                    <h2 class="text-primary"><%= stats.userCount %></h2>
+                    <small class="text-muted"><%= stats.activeUsers %> active</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Total Articles</h5>
+                    <h2 class="text-success"><%= stats.articleCount %></h2>
+                    <small class="text-muted"><%= stats.publishedArticles %> published</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Active Users</h5>
+                    <h2 class="text-info">
+                        <%= Math.round((stats.activeUsers / stats.userCount) * 100) %>%
+                    </h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Published Rate</h5>
+                    <h2 class="text-warning">
+                        <%= Math.round((stats.publishedArticles / stats.articleCount) * 100) %>%
+                    </h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">User Management</h5>
+                    <p class="card-text">Manage users, activate/deactivate accounts, and view user details.</p>
+                    <a href="/admin/users" class="btn btn-primary">Manage Users</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Article Management</h5>
+                    <p class="card-text">View all articles, archive/unarchive content, and monitor posts.</p>
+                    <a href="/admin/articles" class="btn btn-primary">Manage Articles</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Global Analytics</h5>
+                    <p class="card-text">View platform-wide analytics and statistics.</p>
+                    <a href="/admin/analytics" class="btn btn-primary">View Analytics</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

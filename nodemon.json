@@ -1,0 +1,13 @@
+{
+  "ext": "js,json,ejs,css",
+  "ignore": [
+    "node_modules/*",
+    "logs/*",
+    "uploads/*",
+    ".git/*"
+  ],
+  "delay": "1000",
+  "env": {
+    "NODE_ENV": "development"
+  }
+}
