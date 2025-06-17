@@ -1,6 +1,6 @@
 {
   "name": "bloggy",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A multi-user blogging platform with authentication, wysiwyg editor, and analytics",
   "main": "index.js",
   "repository": {
