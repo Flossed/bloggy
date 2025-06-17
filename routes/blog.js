@@ -45,7 +45,7 @@ router.get('/dashboard', ensureAuthenticated, async (req, res) => {
     });
   } catch (error) {
     global.logger.error('Dashboard error:', error);
-    res.status(500).render('error', { error: 'Failed to load dashboard' });
+    res.status(500).render('error', { title: 'Error', error: 'Failed to load dashboard' });
   }
 });
 
@@ -82,7 +82,7 @@ router.post('/create', ensureAuthenticated, upload.single('featuredImage'), asyn
     res.redirect('/blog/dashboard');
   } catch (error) {
     global.logger.error('Create article error:', error);
-    res.status(500).render('error', { error: 'Failed to create article' });
+    res.status(500).render('error', { title: 'Error', error: 'Failed to create article' });
   }
 });
 
@@ -121,7 +121,7 @@ router.post('/update/:id', ensureAuthenticated, ensureOwnership(Article), upload
     res.redirect('/blog/dashboard');
   } catch (error) {
     global.logger.error('Update article error:', error);
-    res.status(500).render('error', { error: 'Failed to update article' });
+    res.status(500).render('error', { title: 'Error', error: 'Failed to update article' });
   }
 });
 
@@ -134,7 +134,7 @@ router.get('/article/:slug', trackAnalytics, async (req, res) => {
     }).populate('author', 'username blogSpace');
     
     if (!article) {
-      return res.status(404).render('error', { error: 'Article not found' });
+      return res.status(404).render('error', { title: 'Error', error: 'Article not found' });
     }
     
     res.render('blog/article', {
@@ -143,7 +143,7 @@ router.get('/article/:slug', trackAnalytics, async (req, res) => {
     });
   } catch (error) {
     global.logger.error('View article error:', error);
-    res.status(500).render('error', { error: 'Failed to load article' });
+    res.status(500).render('error', { title: 'Error', error: 'Failed to load article' });
   }
 });
 
@@ -154,7 +154,7 @@ router.get('/user/:username', async (req, res) => {
     const user = await User.findOne({ username: req.params.username, isActive: true });
     
     if (!user) {
-      return res.status(404).render('error', { error: 'User not found' });
+      return res.status(404).render('error', { title: 'Error', error: 'User not found' });
     }
     
     const articles = await Article.find({ 
@@ -169,7 +169,7 @@ router.get('/user/:username', async (req, res) => {
     });
   } catch (error) {
     global.logger.error('User blog error:', error);
-    res.status(500).render('error', { error: 'Failed to load blog' });
+    res.status(500).render('error', { title: 'Error', error: 'Failed to load blog' });
   }
 });
 
@@ -194,7 +194,7 @@ router.get('/analytics/:id', ensureAuthenticated, ensureOwnership(Article), asyn
     });
   } catch (error) {
     global.logger.error('Analytics error:', error);
-    res.status(500).render('error', { error: 'Failed to load analytics' });
+    res.status(500).render('error', { title: 'Error', error: 'Failed to load analytics' });
   }
 });
 
@@ -205,7 +205,7 @@ router.post('/delete/:id', ensureAuthenticated, ensureOwnership(Article), async 
     res.redirect('/blog/dashboard');
   } catch (error) {
     global.logger.error('Delete article error:', error);
-    res.status(500).render('error', { error: 'Failed to delete article' });
+    res.status(500).render('error', { title: 'Error', error: 'Failed to delete article' });
   }
 });
 
