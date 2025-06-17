@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const passport = require('passport');
+const flash = require('connect-flash');
 const path = require('path');
 const cors = require('cors');
 const winston = require('winston');
@@ -88,6 +89,9 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Flash messages
+app.use(flash());
+
 // Passport configuration
 require('./config/passport')(passport);
 
@@ -95,10 +99,12 @@ require('./config/passport')(passport);
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Make user available to all views
+// Make user and flash messages available to all views
 app.use((req, res, next) => {
   res.locals.currentUser = req.user;
   res.locals.appVersion = require('./package.json').version;
+  res.locals.error = req.flash('error');
+  res.locals.success = req.flash('success');
   next();
 });
 
