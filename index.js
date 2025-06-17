@@ -131,19 +131,19 @@ app.get('/', async (req, res) => {
     });
   } catch (error) {
     logger.error('Error loading homepage:', error);
-    res.status(500).render('error', { error: 'Failed to load articles' });
+    res.status(500).render('error', { title: 'Error', error: 'Failed to load articles' });
   }
 });
 
 // Error handling middleware
 app.use((err, req, res, next) => {
   logger.error(err.stack);
-  res.status(500).render('error', { error: 'Something went wrong!' });
+  res.status(500).render('error', { title: 'Error', error: 'Something went wrong!' });
 });
 
 // 404 handler
 app.use((req, res) => {
-  res.status(404).render('error', { error: 'Page not found' });
+  res.status(404).render('error', { title: 'Error', error: 'Page not found' });
 });
 
 // Start server
