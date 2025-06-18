@@ -1,0 +1,97 @@
+<%- include('../partials/header', { title: 'Reset Password' }) %>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">Reset Password</h2>
+                    
+                    <% if (error && error.length > 0) { %>
+                        <div class="alert alert-danger"><%= error[0] %></div>
+                    <% } %>
+                    <% if (success && success.length > 0) { %>
+                        <div class="alert alert-success"><%= success[0] %></div>
+                    <% } %>
+                    
+                    <p class="text-muted">Enter your new password below.</p>
+                    
+                    <form action="/auth/reset/<%= token %>" method="POST" id="resetForm">
+                        <div class="mb-3">
+                            <label for="password" class="form-label">New Password</label>
+                            <input type="password" class="form-control" id="password" name="password" 
+                                   required minlength="6">
+                            <div class="form-text">Minimum 6 characters</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                            <input type="password" class="form-control" id="confirmPassword" 
+                                   name="confirmPassword" required minlength="6">
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Reset Password</button>
+                        </div>
+                    </form>
+                    
+                    <hr class="my-4">
+                    
+                    <p class="text-center mb-0">
+                        <a href="/auth/login">Back to Login</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('resetForm').addEventListener('submit', function(e) {
+    var password = document.getElementById('password').value;
+    var confirmPassword = document.getElementById('confirmPassword').value;
+    
+    if (password !== confirmPassword) {
+        e.preventDefault();
+        alert('Passwords do not match!');
+        return false;
+    }
+    
+    // Basic password strength check
+    if (password.length < 6) {
+        e.preventDefault();
+        alert('Password must be at least 6 characters long!');
+        return false;
+    }
+});
+
+// Show password strength indicator
+document.getElementById('password').addEventListener('input', function(e) {
+    var password = e.target.value;
+    var strength = 0;
+    
+    if (password.length >= 6) strength++;
+    if (password.length >= 10) strength++;
+    if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+    if (/[0-9]/.test(password)) strength++;
+    if (/[^A-Za-z0-9]/.test(password)) strength++;
+    
+    var strengthText = ['', 'Weak', 'Fair', 'Good', 'Strong', 'Very Strong'];
+    var strengthClass = ['', 'text-danger', 'text-warning', 'text-info', 'text-success', 'text-success'];
+    
+    var indicator = document.getElementById('passwordStrength');
+    if (!indicator) {
+        indicator = document.createElement('div');
+        indicator.id = 'passwordStrength';
+        indicator.className = 'form-text';
+        e.target.parentElement.appendChild(indicator);
+    }
+    
+    if (password.length > 0) {
+        indicator.textContent = 'Password strength: ' + strengthText[strength];
+        indicator.className = 'form-text ' + strengthClass[strength];
+    } else {
+        indicator.textContent = '';
+    }
+});
+</script>
+
+<%- include('../partials/footer') %>

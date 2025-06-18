@@ -205,3 +205,20 @@ footer {
 .btn:active .bi-heart {
     animation: heartBeat 0.5s;
 }
+
+/* Password reset link */
+a[href="/auth/forgot"] {
+    color: var(--primary-color);
+    font-size: 0.9rem;
+}
+
+a[href="/auth/forgot"]:hover {
+    text-decoration: underline !important;
+}
+
+/* Success message for password reset */
+.alert-success {
+    background-color: #d1e7dd;
+    border-color: #badbcc;
+    color: #0f5132;
+}

@@ -152,3 +152,70 @@ exports.sendBulkAnalyticsEmails = async (frequency) => {
     global.logger.error('Failed to send bulk analytics emails:', error);
   }
 };
+
+// Send password reset email
+exports.sendPasswordResetEmail = async (user, token, host) => {
+  try {
+    const resetUrl = `http://${host}/auth/reset/${token}`;
+    
+    const emailHtml = `
+      <h2>Password Reset Request</h2>
+      <p>Hi ${user.username},</p>
+      <p>You are receiving this email because you (or someone else) requested a password reset for your Bloggy account.</p>
+      <p>Please click on the following link, or paste it into your browser to complete the process:</p>
+      <p><a href="${resetUrl}" style="display: inline-block; padding: 10px 20px; background-color: #0d6efd; color: white; text-decoration: none; border-radius: 5px;">Reset Password</a></p>
+      <p>Or copy and paste this link:</p>
+      <p>${resetUrl}</p>
+      <p><strong>This link will expire in 1 hour.</strong></p>
+      <p>If you did not request this, please ignore this email and your password will remain unchanged.</p>
+      <p>Best regards,<br>The Bloggy Team</p>
+    `;
+    
+    const transporter = createTransporter();
+    await transporter.sendMail({
+      from: process.env.EMAIL_FROM || 'Bloggy <noreply@bloggy.com>',
+      to: user.email,
+      subject: 'Bloggy - Password Reset Request',
+      html: emailHtml,
+      text: `Hi ${user.username},\n\nYou requested a password reset. Please visit the following link to reset your password:\n\n${resetUrl}\n\nThis link will expire in 1 hour.\n\nIf you did not request this, please ignore this email.\n\nThe Bloggy Team`
+    });
+    
+    global.logger.info(`Password reset email sent to ${user.email}`);
+  } catch (error) {
+    global.logger.error('Failed to send password reset email:', error);
+    throw error;
+  }
+};
+
+// Send password reset confirmation email
+exports.sendPasswordResetConfirmationEmail = async (user) => {
+  try {
+    const emailHtml = `
+      <h2>Password Successfully Reset</h2>
+      <p>Hi ${user.username},</p>
+      <p>This is a confirmation that the password for your Bloggy account has been successfully changed.</p>
+      <p>If you did not make this change, please contact us immediately.</p>
+      <p>For security reasons, we recommend that you:</p>
+      <ul>
+        <li>Use a strong, unique password</li>
+        <li>Never share your password with anyone</li>
+        <li>Change your password regularly</li>
+      </ul>
+      <p>Best regards,<br>The Bloggy Team</p>
+    `;
+    
+    const transporter = createTransporter();
+    await transporter.sendMail({
+      from: process.env.EMAIL_FROM || 'Bloggy <noreply@bloggy.com>',
+      to: user.email,
+      subject: 'Bloggy - Password Changed Successfully',
+      html: emailHtml,
+      text: `Hi ${user.username},\n\nThis is a confirmation that your Bloggy password has been successfully changed.\n\nIf you did not make this change, please contact us immediately.\n\nThe Bloggy Team`
+    });
+    
+    global.logger.info(`Password reset confirmation email sent to ${user.email}`);
+  } catch (error) {
+    global.logger.error('Failed to send password reset confirmation email:', error);
+    // Don't throw error as this is not critical
+  }
+};
