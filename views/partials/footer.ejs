@@ -25,30 +25,80 @@
     <!-- Quill Editor JS -->
     <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
     <script>
-        var quill = new Quill('#editor', {
-            theme: 'snow',
-            modules: {
-                toolbar: [
-                    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-                    ['bold', 'italic', 'underline', 'strike'],
-                    ['blockquote', 'code-block'],
-                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                    [{ 'script': 'sub'}, { 'script': 'super' }],
-                    [{ 'indent': '-1'}, { 'indent': '+1' }],
-                    [{ 'direction': 'rtl' }],
-                    [{ 'color': [] }, { 'background': [] }],
-                    [{ 'align': [] }],
-                    ['link', 'image', 'video'],
-                    ['clean']
-                ]
-            }
-        });
+        // Add a small delay to ensure DOM is ready
+        setTimeout(function() {
+            try {
+                // Check if Quill is loaded
+                if (typeof Quill === 'undefined') {
+                    console.error('Quill is not loaded');
+                    return;
+                }
+                
+                // Check if editor element exists
+                var editorElement = document.getElementById('editor');
+                if (!editorElement) {
+                    console.error('Editor element not found');
+                    return;
+                }
+                
+                // Initialize Quill
+                var quill = new Quill('#editor', {
+                    theme: 'snow',
+                    placeholder: 'Write your article content here...',
+                    modules: {
+                        toolbar: [
+                            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                            ['bold', 'italic', 'underline', 'strike'],
+                            ['blockquote', 'code-block'],
+                            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                            [{ 'script': 'sub'}, { 'script': 'super' }],
+                            [{ 'indent': '-1'}, { 'indent': '+1' }],
+                            [{ 'direction': 'rtl' }],
+                            [{ 'color': [] }, { 'background': [] }],
+                            [{ 'align': [] }],
+                            ['link', 'image', 'video'],
+                            ['clean']
+                        ]
+                    }
+                });
+                
+                console.log('Quill initialized successfully');
 
-        // Handle form submission
-        document.getElementById('articleForm').onsubmit = function() {
-            var content = document.querySelector('input[name=content]');
-            content.value = quill.root.innerHTML;
-        };
+                // Handle form submission
+                var form = document.getElementById('articleForm');
+                if (form) {
+                    form.addEventListener('submit', function(e) {
+                        // Get the content from Quill
+                        var contentInput = document.getElementById('content');
+                        
+                        if (contentInput && quill) {
+                            // Get both HTML and text content
+                            var htmlContent = quill.root.innerHTML;
+                            var textContent = quill.getText().trim();
+                            
+                            // Check if content is empty
+                            if (textContent.length === 0) {
+                                e.preventDefault();
+                                alert('Please add some content to your article');
+                                return false;
+                            }
+                            
+                            // Set the content value
+                            contentInput.value = htmlContent;
+                            console.log('Form submitted with content:', htmlContent.substring(0, 100) + '...');
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Error initializing Quill:', error);
+                // Fallback to textarea
+                var editorElement = document.getElementById('editor');
+                if (editorElement) {
+                    var content = editorElement.innerHTML;
+                    editorElement.outerHTML = '<textarea class="form-control" name="content" rows="15" required>' + content + '</textarea>';
+                }
+            }
+        }, 100);
     </script>
     <% } %>
 </body>

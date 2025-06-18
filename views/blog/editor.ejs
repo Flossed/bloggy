@@ -25,10 +25,10 @@
                 
                 <div class="mb-3">
                     <label for="content" class="form-label">Content</label>
-                    <div id="editor" style="height: 400px;">
-                        <%- article ? article.content : '' %>
+                    <div id="editor" style="height: 400px; background-color: white;">
+                        <%- article ? article.content : '<p>Start writing your article here...</p>' %>
                     </div>
-                    <input type="hidden" name="content">
+                    <input type="hidden" name="content" id="content" value="<%= article ? article.content : '' %>">
                 </div>
                 
                 <div class="row">
@@ -101,4 +101,4 @@
     </div>
 </div>
 
-<%- include('../partials/footer') %>
+<%- include('../partials/footer', { includeQuill: true }) %>

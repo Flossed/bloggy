@@ -63,6 +63,17 @@ router.post('/create', ensureAuthenticated, upload.single('featuredImage'), asyn
   try {
     const { title, content, excerpt, tags, status, metaTitle, metaDescription, metaKeywords } = req.body;
     
+    // Debug logging
+    global.logger.info('Creating article with content length:', content ? content.length : 0);
+    
+    // Ensure content is not empty
+    if (!content || content.trim() === '' || content === '<p><br></p>') {
+      return res.status(400).render('error', { 
+        title: 'Error', 
+        error: 'Article content is required' 
+      });
+    }
+    
     const article = new Article({
       author: req.user._id,
       title,
