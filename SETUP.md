@@ -74,6 +74,7 @@
 - Save articles as drafts or publish them
 - View analytics for your articles (views, likes, ratings)
 - Receive email reports about your blog's performance
+- Reset forgotten passwords via email
 
 ### For Visitors:
 - Browse published articles
