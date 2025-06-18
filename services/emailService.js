@@ -5,15 +5,25 @@ const Analytics = require('../models/Analytics');
 
 // Create email transporter
 const createTransporter = () => {
-  return nodemailer.createTransporter({
-    host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT || 587,
-    secure: process.env.EMAIL_SECURE === 'true',
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS
+  try {
+    if (!nodemailer || typeof nodemailer.createTransport !== 'function') {
+      console.error('Nodemailer is not properly loaded');
+      throw new Error('Nodemailer is not available');
     }
-  });
+    
+    return nodemailer.createTransport({
+      host: process.env.EMAIL_HOST,
+      port: process.env.EMAIL_PORT || 587,
+      secure: process.env.EMAIL_SECURE === 'true',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      }
+    });
+  } catch (error) {
+    console.error('Error creating email transporter:', error);
+    throw error;
+  }
 };
 
 // Send analytics email to a user
